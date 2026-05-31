@@ -12,7 +12,7 @@ Lab files for Session 43. Two Flask applications that demonstrate how a web appl
 git clone https://github.com/knoff6/mvcdemo
 
 # Enter the folder
-cd your-repo-name
+cd mvcdemo
 
 # Create a virtual environment
 python -m venv venv
