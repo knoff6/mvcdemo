@@ -1,14 +1,20 @@
 # Session 43 — Web Development Foundations
 
+
 Lab files for Session 43. Two Flask applications that demonstrate how a web application is structured — starting from the bare minimum and building up to a proper MVC architecture.
 
 ---
 
 ## Getting Started
 
-Always use a virtual environment before installing any dependencies:
-
 ```bash
+# Clone the repository
+git clone https://github.com/knoff6/mvcdemo
+
+# Enter the folder
+cd your-repo-name
+
+# Create a virtual environment
 python -m venv venv
 
 # Activate — Linux / macOS
@@ -18,7 +24,7 @@ source venv/bin/activate
 venv\Scripts\activate
 ```
 
-Your prompt will show `(venv)` to confirm it's active. To deactivate when done:
+Your prompt will show `(venv)` to confirm it's active. All installs from this point go into the venv, not your system Python. To deactivate when done:
 
 ```bash
 deactivate
