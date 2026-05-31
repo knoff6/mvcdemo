@@ -1,0 +1,49 @@
+{# templates/dashboard.html — CSA Session 43 Lab #}
+{#
+   DASHBOARD PAGE (View Layer — protected route)
+
+   This page is only reachable by logged-in users.
+   The @login_required decorator in app.py enforces this —
+   anyone not logged in is redirected to /login automatically.
+
+   The Controller passes two variables to this template:
+     - current_user  : the logged-in User object (from Flask-Login)
+     - posts         : list of Post objects from the database
+#}
+{% extends "base.html" %}
+
+{% block title %}Dashboard — CSA Lab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <p>Welcome back, <strong>{{ current_user.username }}</strong>.
+     Role: <span class="role-badge">{{ current_user.role }}</span></p>
+</div>
+
+<section class="posts-section">
+  <h2>Recent Posts</h2>
+
+  {% if posts %}
+    {% for post in posts %}
+    <article class="post-card">
+      <div class="post-header">
+        <a href="{{ url_for('view_post', post_id=post.id) }}">
+          <h3>{{ post.title }}</h3>
+        </a>
+        <span class="post-meta">
+          by {{ post.author.username }} · Post #{{ post.id }}
+        </span>
+      </div>
+      <div class="post-body">
+        {# Jinja2 auto-escapes {{ }} by default — HTML in content renders as text #}
+        {{ post.content }}
+      </div>
+    </article>
+    {% endfor %}
+  {% else %}
+    <p class="empty">No posts yet.</p>
+  {% endif %}
+
+</section>
+{% endblock %}

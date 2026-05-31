@@ -1,0 +1,44 @@
+{# templates/search.html — CSA Session 43 Lab #}
+{#
+   SEARCH PAGE (View Layer)
+
+   The Controller passes two variables:
+     - query   : the search term the user typed (string)
+     - results : list of matching Post objects from the database
+
+   The search form uses GET (not POST) because search results
+   are safe to bookmark and share via URL — no data is being modified.
+#}
+{% extends "base.html" %}
+{% block title %}Search — CSA Lab{% endblock %}
+{% block content %}
+<div class="search-page">
+
+  <h1>Search Posts</h1>
+
+  <form method="GET" action="{{ url_for('search') }}">
+    <div class="search-bar">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search post titles…">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
+  {% if query %}
+  <p class="search-summary">
+    Results for: <strong>{{ query }}</strong>
+  </p>
+  {% endif %}
+
+  <ul class="search-results">
+    {% for post in results %}
+    <li>
+      <a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a>
+      <span class="post-meta">by {{ post.author.username }}</span>
+    </li>
+    {% else %}
+      {% if query %}<li class="empty">No results found.</li>{% endif %}
+    {% endfor %}
+  </ul>
+
+</div>
+{% endblock %}

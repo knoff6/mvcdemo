@@ -1,0 +1,50 @@
+{# templates/register.html — CSA Session 43 Lab #}
+{#
+   REGISTRATION PAGE (View Layer)
+
+   Input fields: username, email, password
+   Validation rules (enforced by the Controller in app.py):
+     - Username: 3–50 characters, letters/digits/underscores only
+     - Password: minimum 8 characters, at least one uppercase and one digit
+     - Duplicate username or email will show an error message
+#}
+{% extends "base.html" %}
+
+{% block title %}Register — CSA Lab{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+
+  <h1>Register</h1>
+
+  <form method="POST" action="{{ url_for('register') }}">
+
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username"
+             maxlength="50" pattern="[a-zA-Z0-9_]+"
+             title="Letters, digits, and underscores only"
+             required>
+      <small class="hint">3–50 characters. Letters, digits, underscores only.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password"
+             minlength="8" required>
+      <small class="hint">Min 8 chars, at least one uppercase letter and one digit.</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Account</button>
+
+  </form>
+
+  <p class="auth-link">Already registered? <a href="{{ url_for('login') }}">Login</a></p>
+
+</div>
+{% endblock %}

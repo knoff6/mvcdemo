@@ -1,0 +1,62 @@
+{# templates/login.html — CSA Session 43 Lab #}
+{#
+   LOGIN PAGE (View Layer)
+
+   This template extends base.html — it only defines the {% block content %}
+   section. Everything else (navbar, footer, CSS) comes from base.html.
+
+   Input fields in this form:
+     1. username — POST body, text input
+     2. password — POST body, password type (masked in browser)
+
+   Lab credentials:
+     admin / Admin1234!   |   alice / AlicePass1!   |   bob / BobPass1!
+#}
+{% extends "base.html" %}
+
+{% block title %}Login — CSA Lab{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+
+  <h1>Login</h1>
+
+  <form method="POST" action="{{ url_for('login') }}">
+
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        maxlength="50"
+        autocomplete="off"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+      >
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+
+  </form>
+
+  <p class="auth-link">No account? <a href="{{ url_for('register') }}">Register</a></p>
+
+  <div class="lab-credentials">
+    <strong>Lab credentials:</strong>
+    admin / Admin1234! &nbsp;|&nbsp;
+    alice / AlicePass1! &nbsp;|&nbsp;
+    bob / BobPass1!
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{# templates/base.html — CSA Session 43 Lab #}
+{#
+   BASE TEMPLATE (View Layer)
+   All other templates extend this file using: {% extends "base.html" %}
+   Shared structure — navbar, flash messages, footer — is defined here once
+   and inherited by every page automatically.
+#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CSA Lab App{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  {# ── Navigation ─────────────────────────────────────────────────── #}
+  <nav class="navbar">
+    <div class="nav-brand">
+      🔐 CSA Lab App
+    </div>
+
+    <div class="nav-links">
+      {% if current_user.is_authenticated %}
+        <span class="nav-user">{{ current_user.username }}
+          {% if current_user.is_admin %}
+            <span class="badge badge-admin">admin</span>
+          {% endif %}
+        </span>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('search') }}">Search</a>
+        {% if current_user.is_admin %}
+          <a href="{{ url_for('admin_panel') }}">Admin</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  {# ── Flash messages ──────────────────────────────────────────────── #}
+  {# Flash messages are one-time notifications set by the Controller.  #}
+  {# They appear here and are automatically cleared after display.     #}
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  {# ── Page content ────────────────────────────────────────────────── #}
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  {# ── Footer ───────────────────────────────────────────────────────── #}
+  <footer class="lab-footer">
+    <div>
+      User: <strong>{{ current_user.username if current_user.is_authenticated else "anonymous" }}</strong>
+      &nbsp;|&nbsp;
+      Role: <strong>{{ current_user.role if current_user.is_authenticated else "—" }}</strong>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

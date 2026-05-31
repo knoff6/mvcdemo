@@ -1,0 +1,27 @@
+{# templates/post.html — CSA Session 43 Lab #}
+{#
+   POST DETAIL PAGE (View Layer)
+
+   Displays a single post. The Controller fetches the Post object
+   by its ID from the database and passes it here as {{ post }}.
+
+   Notice how the View just displays data — it has no database logic.
+   All database interaction happened in the Controller (app.py).
+#}
+{% extends "base.html" %}
+{% block title %}Post #{{ post.id }} — CSA Lab{% endblock %}
+{% block content %}
+<div class="post-detail">
+
+  <h1>{{ post.title }}</h1>
+  <p class="post-meta">
+    Post #{{ post.id }} · by {{ post.author.username }}
+    · {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+  </p>
+  <div class="post-content">
+    {{ post.content }}
+  </div>
+  <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back</a>
+
+</div>
+{% endblock %}

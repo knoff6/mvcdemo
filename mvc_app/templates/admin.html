@@ -1,0 +1,40 @@
+{# templates/admin.html — CSA Session 43 Lab #}
+{#
+   ADMIN PANEL (View Layer)
+
+   Only accessible by users with role=admin.
+   The Controller (app.py) checks this and returns 403 for everyone else.
+
+   Displays a table of all registered users.
+   Note: password hashes are never shown — only the hash is stored,
+   never the original password.
+#}
+{% extends "base.html" %}
+{% block title %}Admin — CSA Lab{% endblock %}
+{% block content %}
+<div class="admin-page">
+
+  <h1>Admin Panel</h1>
+  <p>Logged in as: <strong>{{ current_user.username }}</strong>
+     (role: <strong>{{ current_user.role }}</strong>)</p>
+
+  <h2>All Users</h2>
+  <table class="admin-table">
+    <thead>
+      <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Created</th></tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td><span class="role-badge role-{{ u.role }}">{{ u.role }}</span></td>
+        <td>{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+{% endblock %}
