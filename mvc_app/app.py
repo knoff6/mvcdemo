@@ -157,10 +157,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
             login_user(user, remember=False)
-            next_page = request.args.get("next")
-            if next_page and not next_page.startswith("/"):
-                next_page = None
-            return redirect(next_page or url_for("dashboard"))
+            return redirect(url_for("dashboard"))
 
         flash("Invalid username or password.", "danger")
 
