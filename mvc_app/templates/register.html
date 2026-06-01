@@ -1,16 +1,12 @@
-{# templates/register.html — CSA Session 43 Lab #}
+{# register.html — REGISTRATION PAGE (View Layer) #}
 {#
-   REGISTRATION PAGE (View Layer)
-
-   Input fields: username, email, password
-   Validation rules (enforced by the Controller in app.py):
-     - Username: 3–50 characters, letters/digits/underscores only
-     - Password: minimum 8 characters, at least one uppercase and one digit
-     - Duplicate username or email will show an error message
+   This page shows the registration form.
+   When submitted, the Controller (app.py) checks the input and creates
+   a new user account in the database.
 #}
 {% extends "base.html" %}
 
-{% block title %}Register — CSA Lab{% endblock %}
+{% block title %}Register — Lab App{% endblock %}
 
 {% block content %}
 <div class="auth-card">

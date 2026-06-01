@@ -1,16 +1,12 @@
-{# templates/search.html — CSA Session 43 Lab #}
+{# search.html — SEARCH PAGE (View Layer) #}
 {#
-   SEARCH PAGE (View Layer)
-
-   The Controller passes two variables:
-     - query   : the search term the user typed (string)
-     - results : list of matching Post objects from the database
-
-   The search form uses GET (not POST) because search results
-   are safe to bookmark and share via URL — no data is being modified.
+   Lets users search for posts by title.
+   The Controller passes:
+     - query   : what the user typed into the search box
+     - results : a list of matching Post objects
 #}
 {% extends "base.html" %}
-{% block title %}Search — CSA Lab{% endblock %}
+{% block title %}Search — Lab App{% endblock %}
 {% block content %}
 <div class="search-page">
 

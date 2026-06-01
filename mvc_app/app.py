@@ -1,20 +1,19 @@
-# app.py
-# CSA Session 43 — Web Development Foundations
+# app.py — CONTROLLER (MVC)
 #
-# This file is the CONTROLLER layer of the MVC pattern.
-# Route functions receive HTTP requests, interact with the Model,
-# and pass data to the View (Jinja2 templates).
+# This is the Controller layer. It handles incoming web requests:
+#   1. Receives the request (e.g. someone visits /login)
+#   2. Talks to the Model (database) to get or save data
+#   3. Passes data to the View (HTML template) to display
 #
 # Run:
 #   pip install -r requirements.txt
 #   flask run --debug
 
 import re
-import os
 
 from flask import (
     Flask, render_template, request, redirect,
-    url_for, session, flash, abort
+    url_for, flash, abort
 )
 from flask_login import (
     LoginManager, login_user, logout_user,
@@ -24,25 +23,32 @@ from flask_login import (
 from config import Config
 from models import db, User, Post
 
-# ── App factory ───────────────────────────────────────────────────────────────
+# ── Create the Flask app ─────────────────────────────────────────────────────
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# Connect SQLAlchemy (our database library) to the Flask app
 db.init_app(app)
 
+# Set up Flask-Login (a library that manages user sessions for us)
 login_manager = LoginManager(app)
-login_manager.login_view = "login"
-login_manager.login_message_category = "info"
+login_manager.login_view = "login"              # Where to send users who aren't logged in
+login_manager.login_message_category = "info"    # Style of the "please log in" message
 
-# ── Flask-Login user loader ───────────────────────────────────────────────────
+# ── User loader ──────────────────────────────────────────────────────────────
+# Flask-Login calls this function to find out who is logged in.
+# It receives the user's ID (stored in their session cookie) and
+# returns the matching User object from the database.
 
 @login_manager.user_loader
-def load_user(user_id: str):
+def load_user(user_id):
     return db.session.get(User, int(user_id))
 
 
-# ── Database initialisation ───────────────────────────────────────────────────
+# ── Seed the database ────────────────────────────────────────────────────────
+# This runs once on first startup to create tables and add sample users
+# so you have accounts to test with right away.
 
 def seed_database():
     """Create tables and insert sample data if the DB is empty."""
@@ -61,7 +67,7 @@ def seed_database():
         db.session.flush()
 
         p1 = Post(
-            title="Welcome to the CSA Lab",
+            title="Welcome to the Lab",
             content="This is a sample post created by the admin.",
             author_id=admin.id
         )
@@ -76,15 +82,16 @@ def seed_database():
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ROUTES — CONTROLLER LAYER
-# Each function below maps a URL to a Python function via @app.route.
-# The function reads input, talks to the Model, and returns a View.
+#  ROUTES
+#  Each @app.route maps a URL to a Python function.
+#  The function does its work and returns HTML for the browser to display.
 # ══════════════════════════════════════════════════════════════════════════════
 
-# ── Home ──────────────────────────────────────────────────────────────────────
+# ── Home page ─────────────────────────────────────────────────────────────────
 
 @app.route("/")
 def index():
+    # Logged-in users go to the dashboard, everyone else goes to login.
     return redirect(url_for("dashboard" if current_user.is_authenticated else "login"))
 
 
@@ -92,21 +99,18 @@ def index():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """
-    GET  → show the registration form (View)
-    POST → read form input, validate, create User in DB, redirect to login
-    """
+    """GET = show the form. POST = process the form and create an account."""
     if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
 
     if request.method == "POST":
+        # Read what the user typed into the form
         username = request.form.get("username", "")
         email    = request.form.get("email", "")
         password = request.form.get("password", "")
 
+        # Check for problems with the input
         errors = []
-
-        # Input validation — length and format
         if len(username) < 3 or len(username) > 50:
             errors.append("Username must be 3–50 characters.")
         if not re.match(r"^[a-zA-Z0-9_]+$", username):
@@ -122,12 +126,13 @@ def register():
         if User.query.filter_by(email=email).first():
             errors.append("Email already registered.")
 
+        # If there are errors, show them and let the user try again
         if errors:
             for e in errors:
                 flash(e, "danger")
             return render_template("register.html")
 
-        # Create the User Model object and save to DB
+        # Everything looks good — create the new user and save to database
         user = User(username=username, email=email, role="user")
         user.set_password(password)
         db.session.add(user)
@@ -143,10 +148,7 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """
-    GET  → show the login form
-    POST → check credentials via Model, start session, redirect to dashboard
-    """
+    """GET = show the form. POST = check credentials and log the user in."""
     if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
 
@@ -154,6 +156,7 @@ def login():
         username = request.form.get("username", "")
         password = request.form.get("password", "")
 
+        # Look up the user in the database and check their password
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
             login_user(user, remember=False)
@@ -179,11 +182,10 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    """
-    Protected page — @login_required redirects to /login if not authenticated.
-    Passes all posts to the View (dashboard.html) for rendering.
-    """
+    """Show all posts. Only logged-in users can see this page."""
+    # Get all posts from the database, newest first
     posts = Post.query.order_by(Post.created_at.desc()).all()
+    # Pass the data to the template (View) for display
     return render_template("dashboard.html", user=current_user, posts=posts)
 
 
@@ -191,7 +193,8 @@ def dashboard():
 
 @app.route("/post/<int:post_id>")
 @login_required
-def view_post(post_id: int):
+def view_post(post_id):
+    """Show a single post. Returns a 404 error if the post doesn't exist."""
     post = db.session.get(Post, post_id) or abort(404)
     return render_template("post.html", post=post)
 
@@ -201,7 +204,7 @@ def view_post(post_id: int):
 @app.route("/admin")
 @login_required
 def admin_panel():
-    """Only users with role=admin can access this page."""
+    """Only admin users can access this page."""
     if not current_user.is_admin:
         abort(403)
     users = User.query.all()
@@ -213,15 +216,18 @@ def admin_panel():
 @app.route("/search")
 @login_required
 def search():
-    """Search post titles. Results passed to the View for rendering."""
+    """Search for posts by title."""
     query = request.args.get("q", "")
     results = []
     if query:
+        # Find posts whose title contains the search term (case-insensitive)
         results = Post.query.filter(Post.title.ilike(f"%{query}%")).all()
     return render_template("search.html", query=query, results=results)
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
+# This block runs when you execute: python app.py
+# It creates the database tables and starts the web server.
 
 if __name__ == "__main__":
     with app.app_context():

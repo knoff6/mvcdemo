@@ -1,7 +1,7 @@
-# Session 43 — Web Development Foundations
+# Web Development Foundations
 
 
-Lab files for Session 43. Two Flask applications that demonstrate how a web application is structured — starting from the bare minimum and building up to a proper MVC architecture.
+Two Flask applications that demonstrate how a web application is structured — starting from the bare minimum and building up to a proper MVC architecture.
 
 ---
 
@@ -35,7 +35,8 @@ deactivate
 ## What's Inside
 
 ```
-├── basic.py              # App 1 — bare minimum Flask app
+├── basic.py              # App 1 — single-file Flask app
+├── SECURITY.md           # Security considerations for both apps
 └── mvc_app/              # App 2 — full MVC Flask app
     ├── app.py            # Controller — routes and request handling
     ├── models.py         # Model — database schema and queries
@@ -122,6 +123,8 @@ The database is created and seeded automatically on first run with three users:
 | Styling | None | CSS stylesheet |
 | Password storage | Plaintext | PBKDF2-SHA256 hash |
 
+For a full breakdown of security considerations, attack surfaces, and best practices, see [SECURITY.md](SECURITY.md).
+
 ---
 
 ## Prerequisites
@@ -133,4 +136,4 @@ Both apps were built and tested on Python 3.11.
 
 ---
 
-*A teaching resource for anyone learning web development and web application security.*
+*A teaching resource for anyone learning web development.*

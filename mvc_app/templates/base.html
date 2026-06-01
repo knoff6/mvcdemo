@@ -1,28 +1,28 @@
-{# templates/base.html — CSA Session 43 Lab #}
+{# base.html — BASE TEMPLATE (View Layer) #}
 {#
-   BASE TEMPLATE (View Layer)
-   All other templates extend this file using: {% extends "base.html" %}
-   Shared structure — navbar, flash messages, footer — is defined here once
-   and inherited by every page automatically.
+   Every other page extends this file using {% extends "base.html" %}.
+   This means the navbar, flash messages, and footer are written once here
+   and automatically appear on every page.
 #}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}CSA Lab App{% endblock %}</title>
+  <title>{% block title %}Lab App{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-  {# ── Navigation ─────────────────────────────────────────────────── #}
+  {# ── Navigation bar ─────────────────────────────────────────── #}
   <nav class="navbar">
     <div class="nav-brand">
-      🔐 CSA Lab App
+      🔐 Lab App
     </div>
 
     <div class="nav-links">
       {% if current_user.is_authenticated %}
+        {# Show these links only when someone is logged in #}
         <span class="nav-user">{{ current_user.username }}
           {% if current_user.is_admin %}
             <span class="badge badge-admin">admin</span>
@@ -35,15 +35,16 @@
         {% endif %}
         <a href="{{ url_for('logout') }}">Logout</a>
       {% else %}
+        {# Show these links when nobody is logged in #}
         <a href="{{ url_for('login') }}">Login</a>
         <a href="{{ url_for('register') }}">Register</a>
       {% endif %}
     </div>
   </nav>
 
-  {# ── Flash messages ──────────────────────────────────────────────── #}
-  {# Flash messages are one-time notifications set by the Controller.  #}
-  {# They appear here and are automatically cleared after display.     #}
+  {# ── Flash messages ──────────────────────────────────────────── #}
+  {# These are one-time notifications (e.g. "Account created").    #}
+  {# They appear once and disappear after 5 seconds (see main.js). #}
   <div class="flash-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -54,12 +55,13 @@
     {% endwith %}
   </div>
 
-  {# ── Page content ────────────────────────────────────────────────── #}
+  {# ── Page content ────────────────────────────────────────────── #}
+  {# Each page fills in this block with its own content.           #}
   <main class="container">
     {% block content %}{% endblock %}
   </main>
 
-  {# ── Footer ───────────────────────────────────────────────────────── #}
+  {# ── Footer ───────────────────────────────────────────────────── #}
   <footer class="lab-footer">
     <div>
       User: <strong>{{ current_user.username if current_user.is_authenticated else "anonymous" }}</strong>

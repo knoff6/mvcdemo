@@ -1,16 +1,10 @@
-{# templates/admin.html — CSA Session 43 Lab #}
+{# admin.html — ADMIN PANEL (View Layer) #}
 {#
-   ADMIN PANEL (View Layer)
-
-   Only accessible by users with role=admin.
-   The Controller (app.py) checks this and returns 403 for everyone else.
-
-   Displays a table of all registered users.
-   Note: password hashes are never shown — only the hash is stored,
-   never the original password.
+   Only users with the "admin" role can see this page.
+   Displays a table listing every registered user.
 #}
 {% extends "base.html" %}
-{% block title %}Admin — CSA Lab{% endblock %}
+{% block title %}Admin — Lab App{% endblock %}
 {% block content %}
 <div class="admin-page">
 

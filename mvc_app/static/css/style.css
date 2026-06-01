@@ -81,8 +81,6 @@ code, pre {
   text-transform: uppercase;
   letter-spacing: .04em;
 }
-.badge-secure  { background: var(--mint);   color: #0a1628; }
-.badge-vuln    { background: var(--amber);  color: #0a1628; }
 .badge-admin   { background: var(--purple); color: #fff; }
 .role-badge    { font-size: .8rem; padding: .1em .4em; border-radius: 3px; background: var(--border); }
 .role-admin    { background: var(--purple); color: #fff; }
@@ -102,29 +100,6 @@ code, pre {
 .alert-warning  { background: #2a1e0d; border-color: var(--amber);  color: var(--amber); }
 .alert-info     { background: #0d1e2a; border-color: var(--cyan);   color: var(--cyan); }
 
-/* ── Lab notes ────────────────────────────────────────────────────────────── */
-.lab-note {
-  border-left: 4px solid transparent;
-  padding: .7rem 1rem;
-  border-radius: 0 6px 6px 0;
-  margin-bottom: 1.2rem;
-  font-size: .88rem;
-  line-height: 1.5;
-}
-.lab-note.vuln   { background: #2a1500; border-color: var(--amber); color: var(--offwhite); }
-.lab-note.secure { background: #0a2015; border-color: var(--mint);  color: var(--offwhite); }
-.lab-note strong { display: block; margin-bottom: .3rem; }
-
-.lab-audit-hint {
-  margin-top: 1.5rem;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: .9rem 1.1rem;
-  font-size: .88rem;
-}
-.lab-audit-hint ul { margin: .5rem 0 0 1.2rem; }
-.lab-audit-hint li { margin-bottom: .3rem; }
 
 /* ── Auth cards ───────────────────────────────────────────────────────────── */
 .auth-card {

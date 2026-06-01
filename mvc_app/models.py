@@ -1,19 +1,19 @@
-# models.py
-# CSA Session 43 — Web Development Foundations
+# models.py — MODEL (MVC)
 #
-# This file is the MODEL layer of the MVC pattern.
-# It defines the database schema using SQLAlchemy and provides
-# helper methods for password hashing and role checking.
+# This is the Model layer. It defines what our database tables look like
+# and provides helper methods to work with the data.
 #
-# The Controller (app.py) never writes raw SQL.
-# It creates and queries Model objects — SQLAlchemy translates
-# those into safe parameterised SQL queries automatically.
+# We use SQLAlchemy — a library that lets us work with the database
+# using Python classes instead of writing raw SQL queries.
+# Each class below represents one table in the database.
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
+# This object connects our Python code to the database.
+# We set it up here and connect it to the Flask app in app.py.
 db = SQLAlchemy()
 
 
@@ -21,13 +21,13 @@ class User(UserMixin, db.Model):
     """
     Represents a registered user.
 
-    SCHEMA NOTES:
-      id            — surrogate primary key, auto-incremented
-      username      — unique login name
-      password_hash — hashed password; plaintext is never stored
-      email         — unique, used for account identification
-      role          — 'user' or 'admin'; defaults to 'user'
-      created_at    — timestamp of account creation
+    Columns:
+      id            — unique number for each user (auto-generated)
+      username      — the name they log in with (must be unique)
+      password_hash — their password, stored in a scrambled form
+      email         — their email address (must be unique)
+      role          — either 'user' or 'admin'
+      created_at    — when the account was created
     """
 
     __tablename__ = "users"
@@ -39,18 +39,20 @@ class User(UserMixin, db.Model):
     role          = db.Column(db.String(20), nullable=False, default="user")
     created_at    = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # A user can have many posts (one-to-many relationship)
     posts = db.relationship("Post", back_populates="author", lazy=True)
 
-    def set_password(self, plaintext: str) -> None:
-        """Hash the password with PBKDF2-SHA256 before storing."""
+    def set_password(self, plaintext):
+        """Scramble the password before storing it in the database."""
         self.password_hash = generate_password_hash(plaintext)
 
-    def check_password(self, plaintext: str) -> bool:
-        """Verify a plaintext password against the stored hash."""
+    def check_password(self, plaintext):
+        """Check if a given password matches the stored scrambled version."""
         return check_password_hash(self.password_hash, plaintext)
 
     @property
-    def is_admin(self) -> bool:
+    def is_admin(self):
+        """Returns True if this user has the admin role."""
         return self.role == "admin"
 
     def __repr__(self):
@@ -59,8 +61,9 @@ class User(UserMixin, db.Model):
 
 class Post(db.Model):
     """
-    A simple user-authored post.
-    Demonstrates a one-to-many relationship: one User → many Posts.
+    A simple blog post written by a user.
+    Each post belongs to one user (the author).
+    One user can have many posts — this is called a one-to-many relationship.
     """
 
     __tablename__ = "posts"
@@ -71,6 +74,7 @@ class Post(db.Model):
     author_id  = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Link back to the User who wrote this post
     author = db.relationship("User", back_populates="posts")
 
     def __repr__(self):
